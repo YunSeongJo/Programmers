@@ -1,0 +1,59 @@
+import 'package:english_words/english_words.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Startup Name Generator',
+      home: RandomWords(),
+    );
+  }
+}
+class _RandomWordsState extends State<RandomWords> {
+  // 식별자 앞에 _를 붙이면 private이 된다.
+  final _suggestions = <WordPair>[]; //문자열을 담을 리스트와 폰트 스타일을 정의한다.
+  final _biggerFont = const TextStyle(fontSize: 18.0);// 폰트크기
+
+  Widget _buildSuggestions() {
+    return ListView.builder(
+        padding: const EdgeInsets.all(16.0),
+        itemBuilder: (context, i) {
+          //홀수행은 구분자를 넣어준다.(리스트를 구분하기 위해서 Divider이용)
+          if (i.isOdd) return const Divider();
+          //짝수행은 랜덤한 문자열을 넣어준다.
+          final index = i ~/ 2; // i를 2로 나누었을 때, 결과의 정수부분 반환
+          if (index >= _suggestions.length) {
+            // 가지고 있는 문자열을 모두 소진하면, 10개를 더 불러온다.
+            _suggestions.addAll(generateWordPairs().take(10));
+          }
+          return _buildRow(_suggestions[index]);
+        });
+  }
+
+  Widget _buildRow(WordPair pair) {
+    return ListTile(
+      title: Text(
+        pair.asPascalCase, //문자열은 랜덤한 문자열로 pascalCase로 표현
+        style: _biggerFont,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Startup Name Generator'),
+      ),
+      body: _buildSuggestions(),
+    );
+  }
+
+}
+
+class RandomWords extends StatefulWidget {
+  @override
+  State<RandomWords> createState() => _RandomWordsState();
+}
